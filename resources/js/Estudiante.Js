@@ -10,64 +10,81 @@
 
 		};
 
-		function guardar(){
-			var Id = document.getElementById("numero").value;
-			var nombre = document.getElementById("nombre").value;
-			var matricula = document.getElementById("matricula").value;
-			var identificacion = document.getElementById("identificacion").value;
-			var telefono = document.getElementById("telefono").value;
-			var email = document.getElementById("email").value;
+		function agregarEstudiante(estudiante){
+			var rowEstudinate = "<tr>"+
+			"<td>" + estudiante.id + "</td>"
+			+"<td>" + estudiante.nombre + "</td>"
+			+"<td>" + estudiante.matricula + "</td>"
+			+"<td>" + estudiante.identificacion + "</td>"
+			+"<td>" + estudiante.telefono + "</td>"
+			+"<td>" + estudiante.email + "</td>"
+			+ "</tr>";
 
-			console.log("ID:",Id);
-			console.log("Nombre:",nombre);
-			console.log("Matricula",matricula);
-			console.log("Identificacion:",identificacion);
-			console.log("Telefono:",telefono);
-			console.log("Email:",email);
-
-			var table = document.getElementById("estudiantes");
-			var tr = document.createElement("tr");
-			var tdID = document.createElement("td");
-			var tdNombre = document.createElement("td");
-			var tdMatricula = document.createElement("td");
-			var tdIdent = document.createElement("td");
-			var tdTelefono = document.createElement("td");
-			var tdEmail = document.createElement("td");
+			console.log(rowEstudinate);
 
 
-			var textId = document.createTextNode(Id);
-			var textNombre = document.createTextNode(nombre);
-			var textMatricula = document.createTextNode(matricula);
-			var textIdent = document.createTextNode(identificacion);
-			var textTelefono = document.createTextNode(telefono);
-			var textEmail = document.createTextNode(email);
-
-			tdID.appendChild(textId);
-			tdNombre.appendChild(textNombre);
-			tdMatricula.appendChild(textMatricula);
-			tdIdent.appendChild(textIdent);
-			tdTelefono.appendChild(textTelefono);
-			tdEmail.appendChild(textEmail);
-
-			tr.appendChild(tdID);
-			tr.appendChild(tdNombre);
-			tr.appendChild(tdMatricula);
-			tr.appendChild(tdIdent);			
-			tr.appendChild(tdTelefono);
-			tr.appendChild(tdEmail);
-
-			table.appendChild(tr);
+			$("#tabla").append(rowEstudinate);
+			//able tbody
+			//alert("esta funcionando");
 		};
 
-		function guardarEnEntidad()
-		{
-			var est = new Estudiante();
-			est.id = "4";
-			est.nombre = "Yinet Jaquez";
-			est.matricula = "2014-0493";
-			est.identificacion="402-2600871-8";
-			est.telefono="809-693-2545";
-			est.email="Yinet.jaquez@hotmail.com";
+		function guardarDb(estudiante){
+			myStorage = window.localStorage;
 
-			console.log(est);
-		};
+			var estudiantes = [];
+
+			var dbEstudiantes = myStorage.getItem("estudiantes");
+			if(dbEstudiantes != null){
+				estudiantes = JSON.parse(dbEstudiantes);
+			}
+
+			estudiantes.push(estudiante);
+			myStorage.setItem("estudiantes",JSON.stringify(estudiantes));
+		}
+
+		$(document).ready(function (){
+			myStorage = window.localStorage;
+
+			var dbEstudiantes = myStorage.getItem("estudiantes");
+			if(dbEstudiantes != null){
+				estudiantes = JSON.parse(dbEstudiantes);
+
+				$.each(estudiantes, function(i,est){
+					agregarEstudiante(est);
+				});
+			}
+		});
+
+		$(document).ready(function () {
+			$("#guardar").click(function () {
+
+				var id = $("#numero").val();
+				var nombre = $("#nombre").val();
+				var matricula = $("#matricula").val();
+				var identificacion = $("#identificacion").val();
+				var telefono = $("#telefono").val();
+				var email = $("#email").val();
+
+				var est = new Estudiante();
+				est.id = id;
+				est.nombre = nombre;
+				est.matricula = matricula;
+				est.identificacion = identificacion;
+				est.telefono = telefono;
+				est.email =email;
+
+				agregarEstudiante(est);
+				guardarDb(est);
+			});
+		});
+
+		$(document).ready(function () {
+			$("#borrar").click(function (){
+				myStorage = window.localStorage;
+				myStorage.clear();
+
+			window.location.reload();  
+
+			//alert("funciono");
+			});
+		});
